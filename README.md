@@ -1,4 +1,4 @@
 Django_Polls
 ============
 
-Place Holder/
+Place Holder. 
