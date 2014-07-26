@@ -1,6 +1,48 @@
 <h1>{{ poll.question }}</h1>
 
 <ul>
+	<script type="text/javascript">
+	//set vars
+	//manually create JSON object from querry set
+	//  becuase we are using generic views.
+	var poll_data = {'polls':[]};
+	{% for choice in poll.choice_set.all %}
+		poll_data['polls'].append({'choice_text':{{ choice.choice_text }},'votes':{{ choice.votes }}});
+	{% endfor %}
+	
+	var vote_list = [];
+	for( i in poll_data['polls']){
+		vote_list.append(i.votes);
+	}
+
+	var w = 500;
+	var h = 100;
+	var barPadding = 1;
+	var scale_factor = 4;
+
+	//create our svg canvas
+	var svg = d3.select("body")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
+
+	//create our bar plot of votes
+	svg.selectAll("rect").data(vote_list)
+							.enter()
+							.append("rect")
+							.attr("x", function(d, i) {
+								//for scaleable bar placement
+								return i * (poll_data.length);
+							})
+							.attr("y", function(d){
+								return (h - (d * scale_factor);
+							}
+							.attr("width", (w / poll_data.length -barPadding))
+							.attr("height", function(d){
+								return (d * scale_factor);
+							})
+							.attr("fill", "teal");
+	</script>
 {% for choice in poll.choice_set.all %}
     <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
 {% endfor %}
